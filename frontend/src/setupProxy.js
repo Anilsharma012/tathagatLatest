@@ -4,7 +4,8 @@ module.exports = function (app) {
   app.use(
     "/api",
     createProxyMiddleware({
-      target: "http://localhost:3001",
+      target: "http://127.0.0.1:3001",
+
       changeOrigin: true,
       secure: false,
       logLevel: "debug",
@@ -13,7 +14,7 @@ module.exports = function (app) {
           "[Proxy] Forwarding request:",
           req.method,
           req.url,
-          "-> http://localhost:3001" + req.url,
+          "-> http://127.0.0.1:3001" + req.url,
         );
       },
       onProxyRes: function (proxyRes, req, res) {
@@ -32,7 +33,7 @@ module.exports = function (app) {
   app.use(
     "/uploads",
     createProxyMiddleware({
-      target: "http://localhost:3001",
+      target: "http://127.0.0.1:3001",
       changeOrigin: true,
       secure: false,
     }),
