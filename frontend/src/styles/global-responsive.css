@@ -1,0 +1,888 @@
+/* ================================================
+   GLOBAL RESPONSIVE DESIGN SYSTEM
+   TathaGat CAT Exam Preparation Platform
+   Apply these rules across ALL pages
+   ================================================ */
+
+/* ================================================
+   1. BASE RESET & OVERFLOW PREVENTION
+   ================================================ */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw;
+  -webkit-overflow-scrolling: touch;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal scroll globally */
+.student-lms,
+.lms-main,
+.lms-content,
+.mock-test-page,
+.reports-container,
+.lc-view,
+.dashboard-content,
+.study-zone-content {
+  overflow-x: hidden !important;
+  max-width: 100%;
+}
+
+/* Long text handling */
+h1, h2, h3, h4, h5, h6, p, span, label, a {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ================================================
+   2. TYPOGRAPHY SCALE (Mobile-First)
+   ================================================ */
+@media (max-width: 768px) {
+  /* Page Titles: 22-26px */
+  .dashboard-header h1,
+  .page-header h1,
+  .reports-header h1,
+  .lc-page-title,
+  .mock-test-page .page-header h1,
+  .section-header h2,
+  h1.page-title {
+    font-size: 24px !important;
+    line-height: 1.3;
+  }
+
+  /* Section Headings: 16-18px - SCOPED to content areas */
+  .chart-card h3,
+  .upcoming-classes-card h3,
+  .course-progress-card h3,
+  .exam-title,
+  .subject-title,
+  .year-title,
+  .section-stat-card h4,
+  .dashboard-content h2,
+  .dashboard-content h3,
+  .reports-container h2,
+  .reports-container h3,
+  .lms-content h2,
+  .lms-content h3,
+  .mock-test-page h2,
+  .mock-test-page h3 {
+    font-size: 17px;
+    line-height: 1.4;
+  }
+
+  /* Body Text: 13-15px - SCOPED to content containers only */
+  .course-description,
+  .test-description,
+  .class-details p,
+  .stat-card p,
+  .course-card p,
+  .test-card p,
+  .chart-card p,
+  .reports-container p,
+  .dashboard-content > p,
+  .lms-content p:not(.icon-wrapper p),
+  .form-group label,
+  .form-label {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* Table cells - scoped to data tables */
+  .data-table td,
+  .data-table th,
+  .report-table td,
+  .report-table th {
+    font-size: 13px;
+  }
+
+  /* Small Labels: 11-12px */
+  .meta-label,
+  .lc-meta-label,
+  .stat-info p,
+  .notification-time,
+  small,
+  .badge-sm {
+    font-size: 12px !important;
+  }
+}
+
+/* ================================================
+   3. SPACING SYSTEM (Mobile)
+   ================================================ */
+@media (max-width: 768px) {
+  /* Container Padding: 12-16px */
+  .lms-content,
+  .mock-test-page,
+  .reports-container,
+  .lc-header,
+  .dashboard-content {
+    padding: 14px !important;
+  }
+
+  /* Card Gap: 10-14px */
+  .stats-grid,
+  .courses-grid,
+  .dashboard-grid,
+  .papers-grid,
+  .topics-grid,
+  .tests-grid {
+    gap: 12px !important;
+  }
+
+  /* Section Spacing: 18-24px */
+  .section-header,
+  .dashboard-header,
+  .page-header {
+    margin-bottom: 20px !important;
+  }
+}
+
+/* ================================================
+   4. CARD STYLES (Mobile Full-Width)
+   ================================================ */
+@media (max-width: 768px) {
+  /* Cards: Full width, 14-16px padding, consistent radius */
+  .stat-card,
+  .course-card,
+  .test-card,
+  .chart-card,
+  .section-stat-card,
+  .lc-card,
+  .ns-card,
+  .progress-chart-card,
+  .upcoming-classes-card,
+  .course-progress-card,
+  .rank-progress-card {
+    width: 100% !important;
+    padding: 15px !important;
+    border-radius: 12px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Shadow consistency */
+  .stat-card,
+  .course-card,
+  .test-card,
+  .chart-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  }
+}
+
+/* ================================================
+   5. BUTTONS & TOUCH TARGETS (Min 44px)
+   ================================================ */
+@media (max-width: 768px) {
+  /* Minimum touch target height: 44px */
+  .tab,
+  .sub-tab,
+  .filter-btn,
+  .primary-btn,
+  .continue-btn,
+  .enroll-btn,
+  .start-test-btn,
+  .lc-btn,
+  .join-btn,
+  .nav-item,
+  button,
+  .btn,
+  a.btn {
+    min-height: 44px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* Full-width buttons on mobile */
+  .primary-btn,
+  .continue-btn,
+  .enroll-btn,
+  .start-test-btn {
+    width: 100% !important;
+  }
+
+  /* Tab/pill buttons evenly distributed */
+  .main-tabs,
+  .sub-tabs,
+  .filter-buttons {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .main-tabs .tab,
+  .filter-buttons .filter-btn {
+    flex: 1 1 calc(50% - 8px) !important;
+    min-width: 120px;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .sub-tabs .sub-tab {
+    flex: 1 1 auto !important;
+    min-width: 80px;
+    text-align: center !important;
+    padding: 10px 12px !important;
+  }
+}
+
+/* ================================================
+   6. IMAGES, ICONS & CHARTS (Responsive)
+   ================================================ */
+img, svg, canvas, video {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  /* Chart containers */
+  .chart-container,
+  .chart-card {
+    width: 100% !important;
+    min-height: 220px;
+    max-height: 280px;
+  }
+
+  .chart-card canvas {
+    max-height: 200px !important;
+  }
+
+  /* Icon sizes in stat cards */
+  .stat-icon {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 20px !important;
+  }
+}
+
+/* ================================================
+   7. GRIDS TO 2-COLUMN ON MOBILE
+   ================================================ */
+@media (max-width: 768px) {
+  /* Stats cards: 2-column grid */
+  .stats-cards-row,
+  .stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* Dashboard grid: Stack on mobile */
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Charts row: 1 column */
+  .charts-row {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Section stats: 1 column */
+  .section-stats-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Rank stats: 2-column wrap */
+  .rank-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .rank-item {
+    padding: 12px 8px !important;
+  }
+
+  .rank-value {
+    font-size: 20px !important;
+  }
+}
+
+/* Extra small screens: Single column stats */
+@media (max-width: 400px) {
+  .stats-cards-row,
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ================================================
+   8. HEADER / TOPBAR ALIGNMENT
+   ================================================ */
+@media (max-width: 768px) {
+  .lms-header {
+    padding: 10px 12px !important;
+    gap: 8px;
+  }
+
+  .header-right {
+    gap: 6px !important;
+  }
+
+  .profile-btn {
+    padding: 4px 8px !important;
+  }
+
+  .profile-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .notification-btn {
+    padding: 8px !important;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Hide search on mobile */
+  .search-box {
+    display: none !important;
+  }
+}
+
+/* ================================================
+   9. MODAL RESPONSIVE STYLES
+   ================================================ */
+.modal-overlay,
+.preview-overlay {
+  padding: 12px !important;
+}
+
+@media (max-width: 768px) {
+  /* Modal: max-height 90vh, internal scroll */
+  .modal-content,
+  .preview-sheet,
+  .leaderboard-modal,
+  .add-question-modal {
+    max-height: 90vh !important;
+    max-width: calc(100vw - 24px) !important;
+    width: 100% !important;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Modal header sticky */
+  .modal-header,
+  .preview-header {
+    position: sticky !important;
+    top: 0;
+    z-index: 10;
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  /* Modal body scroll */
+  .modal-content-body,
+  .modal-body,
+  .preview-body {
+    flex: 1;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px !important;
+  }
+
+  /* Form inputs full width */
+  .modal-content input,
+  .modal-content select,
+  .modal-content textarea,
+  .add-question-form input,
+  .add-question-form select,
+  .add-question-form textarea {
+    width: 100% !important;
+    min-height: 44px;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 12px !important;
+    border-radius: 8px;
+  }
+
+  /* Labels spacing */
+  .form-group label,
+  .form-label {
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  /* Close button always visible */
+  .modal-close,
+  .preview-close,
+  .btn-close {
+    position: absolute !important;
+    right: 12px;
+    top: 12px;
+    z-index: 20;
+    min-width: 36px;
+    min-height: 36px;
+  }
+}
+
+/* Lock body scroll when modal open */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed;
+  width: 100%;
+}
+
+/* ================================================
+   10. STUDY ZONE / COURSE CARD FIXES
+   ================================================ */
+@media (max-width: 768px) {
+  /* Course bullets list clean display */
+  .course-features-list,
+  .course-card ul,
+  .course-bullets {
+    padding-left: 20px !important;
+    margin: 12px 0 !important;
+  }
+
+  .course-features-list li,
+  .course-card li {
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* Stat chips: 2-column grid */
+  .dash-statics,
+  .course-stats-chips,
+  .content-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    margin-top: 16px !important;
+  }
+
+  .static-card,
+  .stat-chip {
+    margin: 0 !important;
+    padding: 14px 12px !important;
+    text-align: center;
+  }
+
+  /* Bottom tabs centered */
+  .course-tabs,
+  .content-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+
+  .course-tabs .tab-item,
+  .content-tabs .tab-item {
+    min-height: 44px;
+    padding: 10px 16px !important;
+  }
+}
+
+/* ================================================
+   11. LIVE CLASSES PAGE FIXES
+   ================================================ */
+@media (max-width: 768px) {
+  /* Back button full-width or max-width centered */
+  .lc-back-btn,
+  .back-btn {
+    max-width: 100% !important;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 16px !important;
+  }
+
+  /* Tabs wrap properly */
+  .lc-tabs,
+  .class-filter-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .lc-tabs .tab,
+  .class-filter-tabs .tab {
+    flex: 1 1 calc(33.33% - 8px) !important;
+    min-width: 100px;
+    text-align: center !important;
+    min-height: 44px;
+  }
+
+  /* Empty state card centered */
+  .lc-empty-state,
+  .empty-state {
+    padding: 32px 16px !important;
+    text-align: center;
+  }
+
+  .lc-empty-state img,
+  .empty-state img {
+    max-width: 120px !important;
+    margin: 0 auto 16px;
+  }
+}
+
+/* ================================================
+   12. MOCK TESTS PAGE - SIDEBAR TO HORIZONTAL
+   ================================================ */
+@media (max-width: 768px) {
+  /* Convert sidebar categories to horizontal pills */
+  .mock-test-sidebar,
+  .test-categories-sidebar {
+    display: none !important;
+  }
+
+  /* Main tabs as horizontal scrollable pills */
+  .tabs-container {
+    padding: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .main-tabs {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .main-tabs .tab {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 12px 16px !important;
+  }
+
+  /* Sub-tabs wrapped */
+  .sub-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: center !important;
+  }
+
+  .sub-tab {
+    flex: 1 1 auto !important;
+    min-width: 100px !important;
+    text-align: center !important;
+    padding: 10px 14px !important;
+  }
+
+  /* Test cards full width */
+  .papers-grid,
+  .topics-grid,
+  .tests-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .test-card {
+    padding: 0 !important;
+  }
+
+  .test-card-header {
+    padding: 14px !important;
+  }
+
+  .test-description {
+    padding: 0 14px 12px !important;
+  }
+
+  .test-meta {
+    padding: 0 14px 14px !important;
+  }
+
+  .start-test-btn {
+    width: calc(100% - 28px) !important;
+    margin: 0 14px 14px !important;
+  }
+}
+
+/* ================================================
+   13. DASHBOARD WELCOME / NEXT STEP FIXES
+   ================================================ */
+@media (max-width: 768px) {
+  /* Welcome title spacing */
+  .dashboard-header h1 {
+    font-size: 22px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .dashboard-header p {
+    font-size: 13px !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* Next Step card chips wrap */
+  .next-step-container {
+    margin: 16px 0 !important;
+  }
+
+  .ns-card {
+    padding: 16px !important;
+  }
+
+  .ns-card .chips,
+  .ns-meta-chips {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .ns-card .chip,
+  .ns-meta-chip {
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+    white-space: nowrap;
+  }
+
+  /* Stat cards centered */
+  .stat-card {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 20px 16px !important;
+  }
+
+  .stat-card .stat-icon {
+    margin-bottom: 8px;
+  }
+
+  .stat-info h3 {
+    font-size: 28px !important;
+  }
+
+  .stat-info p {
+    font-size: 12px !important;
+  }
+}
+
+/* ================================================
+   14. ANALYSIS & REPORTS STATS FIX
+   ================================================ */
+@media (max-width: 768px) {
+  .reports-container {
+    padding: 12px !important;
+  }
+
+  .reports-header h1 {
+    font-size: 22px !important;
+    text-align: center;
+  }
+
+  /* Stats 2x2 grid */
+  .stats-cards-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .stat-card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 14px 10px !important;
+  }
+
+  .stat-card .stat-icon {
+    width: 40px !important;
+    height: 40px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .stat-info h3 {
+    font-size: 22px !important;
+    margin-bottom: 2px !important;
+    word-break: break-word;
+  }
+
+  .stat-info p {
+    font-size: 11px !important;
+    line-height: 1.3;
+  }
+
+  /* Charts single column */
+  .charts-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .chart-card {
+    height: auto !important;
+    min-height: 240px !important;
+    max-height: none !important;
+  }
+
+  .chart-container {
+    height: 180px !important;
+  }
+}
+
+/* ================================================
+   15. TABLE RESPONSIVE (2-Column Wrap)
+   ================================================ */
+@media (max-width: 768px) {
+  .attempts-table-container {
+    overflow-x: visible !important;
+  }
+
+  .attempts-table {
+    display: block !important;
+  }
+
+  .attempts-table thead {
+    display: none !important;
+  }
+
+  .attempts-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .attempts-table tr {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #e5e7eb;
+  }
+
+  .attempts-table td {
+    padding: 0 !important;
+    border: none !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .attempts-table td::before {
+    content: attr(data-label);
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .attempts-table td:first-child {
+    grid-column: span 2;
+  }
+}
+
+/* ================================================
+   16. SIDEBAR MOBILE FIXES
+   ================================================ */
+@media (max-width: 768px) {
+  .lms-sidebar {
+    transform: translateX(-100%) !important;
+  }
+
+  .lms-sidebar.open {
+    transform: translateX(0) !important;
+  }
+
+  .lms-main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .menu-toggle {
+    display: flex !important;
+  }
+
+  .close-sidebar {
+    display: block !important;
+  }
+}
+
+/* ================================================
+   17. EXTRA SMALL DEVICES (320px)
+   ================================================ */
+@media (max-width: 360px) {
+  .lms-content,
+  .mock-test-page,
+  .reports-container {
+    padding: 10px !important;
+  }
+
+  .stat-card,
+  .test-card,
+  .course-card {
+    padding: 12px !important;
+  }
+
+  .dashboard-header h1 {
+    font-size: 20px !important;
+  }
+
+  .stats-cards-row,
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .main-tabs .tab {
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+  }
+}
+
+/* ================================================
+   18. NOTIFICATION DROPDOWN MOBILE
+   ================================================ */
+@media (max-width: 768px) {
+  .notifications-dropdown {
+    position: fixed !important;
+    top: 60px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-height: 70vh !important;
+  }
+}
+
+/* ================================================
+   19. FORM ELEMENTS RESPONSIVE
+   ================================================ */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px;
+    padding: 10px 12px !important;
+  }
+}
+
+/* ================================================
+   20. UTILITY CLASSES
+   ================================================ */
+.mobile-hidden {
+  display: block;
+}
+
+.mobile-visible {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .mobile-visible {
+    display: block !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  .mobile-center {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+}

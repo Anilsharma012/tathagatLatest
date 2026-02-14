@@ -1,0 +1,237 @@
+/* Page background like exam window */
+.cat-instructions-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #bfc7d2;
+  /* outer bluish-grey */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Top bar */
+.cat-topbar {
+  background: #ffffff;
+  border-bottom: 1px solid #9aa3ad;
+  box-shadow: inset 0 -1px 0 #d5dbe2;
+}
+
+.cat-logos-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  height: 36px;
+  overflow: hidden;
+}
+
+/* placeholder "logos" look */
+.logo-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e8eef6;
+  border: 1px solid #c7d2e2;
+  flex: 0 0 auto;
+}
+
+.cat-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 4px 0 6px;
+  color: #111;
+}
+
+/* Main shell like screenshot (white frame with border) */
+.cat-shell {
+  width: min(1100px, 96%);
+  margin: 10px auto 0;
+  background: #ffffff;
+  border: 1px solid #6f6f6f;
+  display: grid;
+  grid-template-columns: 1fr 1px 320px;
+  min-height: calc(100vh - 72px);
+}
+
+/* Left panel */
+.cat-left {
+  display: grid;
+  grid-template-rows: 34px 1fr 52px;
+}
+
+.cat-left-header {
+  background: #bfe3f1;
+  /* light blue header like CAT */
+  border-bottom: 1px solid #8fb8c7;
+  color: #1b4c63;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 7px 10px;
+}
+
+.cat-left-scroll {
+  padding: 12px 12px 16px;
+  overflow-y: auto;
+  font-size: 13px;
+  color: #111;
+  line-height: 1.35;
+}
+
+/* scrollbar look similar */
+.cat-left-scroll::-webkit-scrollbar {
+  width: 12px;
+}
+
+.cat-left-scroll::-webkit-scrollbar-track {
+  background: #efefef;
+  border-left: 1px solid #d0d0d0;
+}
+
+.cat-left-scroll::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+  border: 2px solid #efefef;
+  border-radius: 10px;
+}
+
+/* Callout box at top */
+.cat-callout {
+  border: 1px solid #9c9c9c;
+  background: #f6f6f6;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+}
+
+/* Section heading */
+.cat-section-title {
+  font-weight: bold;
+  margin: 10px 0 6px;
+}
+
+/* Lists */
+.cat-ol {
+  margin: 6px 0 12px 18px;
+  padding: 0;
+}
+
+.cat-ol li {
+  margin: 6px 0;
+}
+
+/* a, b, c list */
+.cat-ol.alpha {
+  list-style-type: lower-alpha;
+  margin-left: 22px;
+}
+
+/* table image block */
+.cat-table-block {
+  margin: 10px 0 10px;
+}
+
+.cat-table-image {
+  width: min(720px, 100%);
+  display: block;
+  border: 1px solid #cfcfcf;
+}
+
+.cat-muted {
+  font-size: 12px;
+  color: #111;
+  margin: 6px 0 10px;
+}
+
+.cat-paragraph {
+  margin: 8px 0;
+}
+
+.cat-zoom-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.cat-zoom-ico {
+  width: 22px;
+  height: 22px;
+  color: #7b4a10;
+}
+
+/* Footer with Next button */
+.cat-left-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 14px;
+  border-top: 1px solid #d7d7d7;
+  background: #ffffff;
+}
+
+.cat-next-btn {
+  background: #f5f5f5;
+  border: 1px solid #c8c8c8;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cat-next-btn:hover {
+  background: #ededed;
+}
+
+.cat-next-arrow {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Divider */
+.cat-divider {
+  background: #2f2f2f;
+  /* dark vertical line */
+}
+
+/* Right panel */
+.cat-right {
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  padding-top: 22px;
+}
+
+.candidate-card {
+  text-align: center;
+  width: 100%;
+}
+
+.candidate-avatar {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.candidate-name {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #111;
+}
+
+/* Responsive (still keeps same look) */
+@media (max-width: 900px) {
+  .cat-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .cat-divider {
+    display: none;
+  }
+
+  .cat-right {
+    border-top: 1px solid #6f6f6f;
+    padding: 14px 0 18px;
+  }
+}

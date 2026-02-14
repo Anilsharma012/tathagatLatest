@@ -1,0 +1,285 @@
+.mc-wrapper {
+  padding: 40px;
+  text-align: center;
+}
+
+.mc-error {
+  color: #d32f2f;
+}
+
+.mc-browse {
+  background: #1A237E;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.mc-grid {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.mc-card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mc-thumb {
+  background: #f5f5f5;
+  border-radius: 8px;
+  height: 120px;
+}
+
+.mc-title {
+  font-weight: 600;
+}
+
+.mc-status {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.mc-start {
+  background: #1A237E;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+/* ================================================
+   COURSE DETAILS VIEW (After Continue Learning Click)
+   ================================================ */
+.course-detail-view {
+  padding: 20px;
+}
+
+.course-hero-card {
+  background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+  border-radius: 16px;
+  padding: 24px;
+  color: white;
+  margin-bottom: 24px;
+}
+
+.course-hero-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.course-hero-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.course-features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+}
+
+.course-features-list li {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.course-features-list li::before {
+  content: '•';
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.course-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.course-stat-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.course-stat-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.course-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.course-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.course-stat-label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.recorded-classes-tab {
+  background: #1a1a2e;
+  color: white;
+  border-radius: 30px;
+  padding: 12px 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 24px;
+}
+
+.recorded-classes-tab .count-badge {
+  background: white;
+  color: #1a1a2e;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ================================================
+   MOBILE RESPONSIVE - Course Detail View
+   ================================================ */
+@media (max-width: 768px) {
+  .mc-wrapper {
+    padding: 16px;
+  }
+
+  .mc-grid {
+    padding: 16px;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .mc-card {
+    padding: 14px;
+  }
+
+  .mc-thumb {
+    height: 100px;
+  }
+
+  /* Course Hero Card Mobile */
+  .course-detail-view {
+    padding: 12px;
+  }
+
+  .course-hero-card {
+    padding: 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+
+  .course-hero-badge {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+
+  .course-hero-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  /* Features list - single column on mobile */
+  .course-features-list {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .course-features-list li {
+    font-size: 13px;
+  }
+
+  /* Stats Grid - 2x2 layout on mobile */
+  .course-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .course-stat-card {
+    padding: 12px;
+    gap: 10px;
+    border-radius: 10px;
+  }
+
+  .course-stat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .course-stat-value {
+    font-size: 16px;
+  }
+
+  .course-stat-label {
+    font-size: 11px;
+  }
+
+  /* Recorded Classes Tab */
+  .recorded-classes-tab {
+    width: 100%;
+    justify-content: center;
+    margin-top: 16px;
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .course-hero-title {
+    font-size: 18px;
+  }
+
+  .course-features-list li {
+    font-size: 12px;
+  }
+
+  .course-stat-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 14px 10px;
+  }
+
+  .course-stat-icon {
+    width: 40px;
+    height: 40px;
+  }
+}

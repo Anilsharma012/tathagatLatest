@@ -1,0 +1,647 @@
+.mock-test-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+}
+
+.page-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.tabs-container {
+  margin-bottom: 32px;
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.main-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding-bottom: 0;
+  border-bottom: none;
+  align-items: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Pill/Capsule button design */
+.tab {
+  padding: 10px 20px;
+  background: white;
+  border: 2px solid #1e3a5f;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a5f;
+  cursor: pointer;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab:hover {
+  background: #f0f4f8;
+  color: #1e3a5f;
+}
+
+.tab.active {
+  background: #1e3a5f;
+  border-color: #1e3a5f;
+  color: white;
+  box-shadow: none;
+}
+
+.sub-tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 0;
+}
+
+.sub-tab {
+  padding: 8px 20px;
+  background: white;
+  border: 2px solid #1e3a5f;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e3a5f;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sub-tab:hover {
+  background: #f0f4f8;
+  color: #1e3a5f;
+}
+
+.sub-tab.active {
+  background: #1e3a5f;
+  border-color: #1e3a5f;
+  color: white;
+}
+
+.content-container {
+  min-height: 400px;
+}
+
+.papers-container,
+.topics-container,
+.sessional-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.exam-section,
+.subject-section,
+.year-section {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.exam-title,
+.subject-title,
+.year-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: -10px;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.exam-title::before,
+.subject-title::before,
+.year-title::before {
+  content: '';
+  width: 6px;
+  height: 28px;
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  border-radius: 3px;
+}
+
+.papers-grid,
+.topics-grid,
+.tests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.test-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.test-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  border-color: #2563eb;
+}
+
+.test-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 0 20px;
+  gap: 12px;
+}
+
+.test-card-header h4 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.test-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.test-badge.previous-year {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+}
+
+.test-badge.topic-wise {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  color: #0369a1;
+}
+
+.test-badge.full {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #15803d;
+}
+
+.test-badge.series {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #b45309;
+}
+
+.test-badge.module {
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+  color: #be185d;
+}
+
+.test-badge.sessional {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4338ca;
+}
+
+.test-badge.free {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-weight: 800;
+}
+
+.free-test-card {
+  border: 2px solid #10b981;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.free-test-card:hover {
+  border-color: #059669;
+}
+
+.test-description {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  padding: 12px 20px;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.test-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #475569;
+  padding: 0 20px 16px 20px;
+  flex-wrap: wrap;
+}
+
+.test-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.start-test-btn {
+  width: calc(100% - 40px);
+  margin: 0 20px 20px 20px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.start-test-btn::before {
+  content: '▶';
+  font-size: 12px;
+}
+
+.start-test-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+}
+
+.start-test-btn:active {
+  transform: translateY(0);
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #64748b;
+  font-size: 16px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.loading-state::before {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 20px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-state::before {
+  content: '📋';
+  font-size: 48px;
+}
+
+@media (max-width: 768px) {
+  .mock-test-page {
+    padding: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+  }
+
+  .papers-grid,
+  .topics-grid,
+  .tests-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Main tabs - horizontal scroll with pill design */
+  .main-tabs {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px;
+    justify-content: flex-start;
+    padding: 8px 4px;
+  }
+
+  .tab {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    border-radius: 50px !important;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sub-tabs {
+    flex-wrap: wrap;
+  }
+
+  .exam-section,
+  .subject-section,
+  .year-section {
+    padding: 20px;
+  }
+
+  .test-card-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .test-badge {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+
+  /* COMPACT TEST CARDS - Hide description and meta on small screens */
+  .test-description {
+    display: none;
+  }
+
+  .test-meta {
+    display: none;
+  }
+
+  /* Compact card layout - only show name, badge, button */
+  .test-card {
+    border-radius: 12px;
+  }
+
+  .test-card-header {
+    padding: 14px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .test-card-header h4 {
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .test-badge {
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  .start-test-btn {
+    width: calc(100% - 28px);
+    margin: 0 14px 14px;
+    padding: 12px 16px;
+    min-height: 44px;
+    font-size: 14px;
+  }
+}
+
+/* ================================================
+   MOCK TESTS - ENHANCED MOBILE RESPONSIVE
+   ================================================ */
+@media (max-width: 768px) {
+  .mock-test-page {
+    padding: 12px;
+  }
+
+  .page-header {
+    margin-bottom: 20px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+  }
+
+  /* Tabs container */
+  .tabs-container {
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+  }
+
+  /* Main tabs - horizontal scroll with pill design on mobile */
+  .main-tabs {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px;
+    padding: 6px 4px 10px;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start;
+  }
+
+  .main-tabs::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .main-tabs::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .main-tabs::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  .tab {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+    width: auto;
+    text-align: center;
+    border-radius: 50px !important;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Sub-tabs as horizontal wrap */
+  .sub-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 14px;
+  }
+
+  .sub-tab {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 100px;
+    text-align: center;
+    padding: 10px 12px;
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  /* Content sections */
+  .exam-section,
+  .subject-section,
+  .year-section {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .exam-title,
+  .subject-title,
+  .year-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .exam-title::before,
+  .subject-title::before,
+  .year-title::before {
+    width: 4px;
+    height: 22px;
+  }
+
+  /* Test cards full width */
+  .papers-grid,
+  .topics-grid,
+  .tests-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .test-card {
+    border-radius: 14px;
+  }
+
+  .test-card-header {
+    padding: 14px 14px 0;
+  }
+
+  .test-card-header h4 {
+    font-size: 15px;
+  }
+
+  .test-badge {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .test-description {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .test-meta {
+    padding: 0 14px 12px;
+    gap: 8px;
+  }
+
+  .test-meta span {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .start-test-btn {
+    width: calc(100% - 28px);
+    margin: 0 14px 14px;
+    padding: 12px 20px;
+    min-height: 46px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  /* Loading/Empty states */
+  .loading-state,
+  .empty-state {
+    padding: 50px 16px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .sub-tab {
+    flex: 1 1 100%;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .exam-title,
+  .subject-title,
+  .year-title {
+    font-size: 16px;
+  }
+}

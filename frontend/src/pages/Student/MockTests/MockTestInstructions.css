@@ -1,0 +1,422 @@
+.cat-instructions-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+.cat-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.cat-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.cat-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 20px;
+}
+
+.cat-error button {
+  padding: 10px 20px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cat-header {
+  background: linear-gradient(to bottom, #e8f4fc 0%, #cce7f5 100%);
+  border-bottom: 1px solid #b0d4e8;
+}
+
+.cat-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: linear-gradient(to bottom, #f0f8fc 0%, #d8edf7 100%);
+}
+
+.cat-iim-banner {
+  width: 100%;
+  height: auto;
+  max-height: 50px;
+  object-fit: contain;
+}
+
+.cat-logos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iim-logo {
+  height: 35px;
+  width: auto;
+  object-fit: contain;
+}
+
+.cat-title-center {
+  flex: 1;
+  text-align: center;
+}
+
+.cat-2025 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1565c0;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.cat-header-bar {
+  background: linear-gradient(to bottom, #4a9fd4 0%, #2d7fb8 100%);
+  color: white;
+  padding: 8px 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.cat-content {
+  padding: 15px 20px;
+}
+
+.cat-main-panel {
+  display: flex;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.cat-instructions-panel {
+  flex: 1;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+.notice-box {
+  margin: 15px;
+  padding: 12px 15px;
+  border: 1px solid #333;
+  background: #fff;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.instructions-content {
+  padding: 0 20px 20px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000;
+  margin: 15px 0 10px;
+}
+
+.instruction-list {
+  margin: 0;
+  padding-left: 25px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.instruction-list li {
+  margin-bottom: 12px;
+  text-align: justify;
+}
+
+.instruction-list li ol {
+  margin-top: 8px;
+  padding-left: 20px;
+}
+
+.instruction-list li ol li {
+  margin-bottom: 6px;
+}
+
+.status-table {
+  margin: 15px 0;
+  overflow-x: auto;
+}
+
+.status-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.status-table th,
+.status-table td {
+  border: 1px solid #999;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.status-table th {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+.status-table td:first-child {
+  width: 50px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.status-table td:nth-child(2) {
+  width: 150px;
+  text-align: center;
+}
+
+.status-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+}
+
+.status-box.gray {
+  background: #9e9e9e;
+}
+
+.status-box.red {
+  background: #e53935;
+}
+
+.status-box.green {
+  background: #43a047;
+}
+
+.status-box.purple {
+  background: #7b1fa2;
+  border-radius: 50%;
+}
+
+.status-box.purple-tick {
+  background: #7b1fa2;
+  border-radius: 50%;
+  position: relative;
+}
+
+.status-box.purple-tick::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  background: #43a047;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.important-note {
+  font-size: 13px;
+  margin: 15px 0;
+  line-height: 1.5;
+}
+
+.caution-text {
+  margin-top: 10px;
+  padding: 10px;
+  background: #fff3e0;
+  border-left: 3px solid #ff9800;
+  font-size: 13px;
+}
+
+.zoom-info {
+  margin: 15px 0;
+  font-size: 13px;
+}
+
+.zoom-table {
+  width: auto;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.zoom-table th,
+.zoom-table td {
+  border: 1px solid #999;
+  padding: 8px 20px;
+  text-align: center;
+}
+
+.zoom-table th {
+  background: #f0f0f0;
+  font-weight: normal;
+}
+
+.cat-profile-panel {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.avatar-circle {
+  width: 100%;
+  height: 100%;
+  background: #e8f0f5;
+  border-radius: 50%;
+  border: 2px solid #b0c4d8;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-svg {
+  width: 80%;
+  height: 80%;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+}
+
+.next-button-container {
+  margin-top: auto;
+  padding: 20px 0;
+  position: fixed;
+  bottom: 20px;
+  right: 40px;
+}
+
+.cat-btn-next {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: #f5f5f5;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cat-btn-next:hover {
+  background: #e0e0e0;
+}
+
+.cat-btn-next .arrow {
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .cat-main-panel {
+    flex-direction: column;
+  }
+  
+  .cat-profile-panel {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 15px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .profile-section {
+    flex-direction: row;
+    gap: 15px;
+    margin-bottom: 0;
+  }
+  
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0;
+  }
+  
+  .next-button-container {
+    position: static;
+    margin-top: 0;
+    padding: 0;
+  }
+  
+  .cat-instructions-panel {
+    max-height: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .cat-header-top {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .cat-logos {
+    display: none;
+  }
+  
+  .cat-2025 {
+    font-size: 20px;
+  }
+  
+  .instruction-list {
+    padding-left: 20px;
+    font-size: 12px;
+  }
+  
+  .status-table {
+    font-size: 11px;
+  }
+  
+  .status-box {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+}

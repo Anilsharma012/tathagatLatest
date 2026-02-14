@@ -1,0 +1,42 @@
+.ns-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,.06);max-width:720px;width:100%;box-sizing:border-box}
+.ns-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ns-title{font-weight:700;color:#111827}
+.ns-badge{background:#f1f5f9;color:#475569;border-radius:999px;padding:4px 10px;font-size:12px;margin-left:6px}
+.ns-chips{display:flex;gap:6px;flex-wrap:wrap}
+.ns-cta{margin-top:10px;display:grid;gap:8px}
+.ns-cta-title{font-weight:600;word-wrap:break-word}
+.ns-btn{display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:8px 12px;border-radius:10px;text-align:center}
+.ns-btn-disabled{pointer-events:none;opacity:.6}
+.ns-chip{padding:2px 8px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:700}
+.ns-A{background:#e0f2fe;color:#075985}
+.ns-B{background:#fee2e2;color:#991b1b}
+.ns-C{background:#ede9fe;color:#5b21b6}
+.ns-D{background:#dcfce7;color:#065f46}
+.ns-sessions{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ns-session{padding:8px;border:1px solid #eef2ff;border-radius:10px}
+.ns-time{color:#334155;font-size:12px}
+.ns-link{color:#2563eb;word-break:break-word}
+.ns-muted{color:#6b7280;font-size:12px}
+.ns-live{color:#16a34a;font-weight:800}
+.ns-error{background:#fef2f2;border-color:#fee2e2}
+
+@media (max-width: 768px) {
+  .ns-card{padding:14px;border-radius:12px;max-width:100%}
+  .ns-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .ns-title{font-size:15px;line-height:1.4}
+  .ns-badge{margin-left:0;font-size:11px;padding:5px 10px}
+  .ns-chips{gap:6px;margin-top:4px}
+  .ns-chip{font-size:11px;padding:4px 10px}
+  .ns-cta{margin-top:12px}
+  .ns-cta-title{font-size:14px;line-height:1.4}
+  .ns-btn{padding:12px;font-size:14px;width:100%;min-height:44px;display:flex;align-items:center;justify-content:center}
+  .ns-session{padding:12px}
+  .ns-time{font-size:12px}
+  .ns-muted{font-size:11px}
+}
+
+@media (max-width: 400px) {
+  .ns-card{padding:12px}
+  .ns-title{font-size:14px}
+  .ns-chip{font-size:10px;padding:3px 8px}
+}
