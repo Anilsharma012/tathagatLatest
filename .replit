@@ -4,3 +4,68 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+EMAIL = "tathagat949@gmail.com"
+KARIX_SENDER_ID = "TATHGT"
+KARIX_DLT_ENTITY_ID = "1101538550000021740"
+KARIX_DLT_TEMPLATE_ID = "1107170349275465220"
+KARIX_SMS_URL = "https://japi.instaalerts.zone/httpapi/JsonReceiver"
+KARIX_OTP_TEXT_TEMPLATE = "Dear User, use {{OTP}} as your sign up otp for mytathagat.com. OTP is confidential and valid for 10 mins. Never share your OTP with any unauthorized person."
+NODE_ENV = "development"
+SKIP_SEED = "1"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Backend Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Frontend"
+
+[[workflows.workflow]]
+name = "Backend Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace/backend && node index.js"
+waitForPort = 3001
+
+[[workflows.workflow]]
+name = "Frontend"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace/frontend && npx cross-env HOST=0.0.0.0 PORT=5000 DANGEROUSLY_DISABLE_HOST_CHECK=true WDS_SOCKET_PORT=0 GENERATE_SOURCEMAP=false TSC_COMPILE_ON_ERROR=true ESLINT_NO_DEV_ERRORS=true NODE_OPTIONS=\"--max-old-space-size=4096\" react-scripts start"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "cd /home/runner/workspace/backend && PORT=5000 NODE_ENV=production SKIP_SEED=1 node index.js"]
+build = ["bash", "-c", "cd /home/runner/workspace/frontend && npm run build"]

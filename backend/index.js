@@ -818,23 +818,31 @@ safeUse("/api/gallery", "./routes/galleryRoutes");
 safeUse("/api/admin/roles", "./routes/roleRoutes");
 safeUse("/api/admin/admin-users", "./routes/adminUserRoutes");
 
-/* -------------------- Production Static (kept your note) -------------------- */
+/* -------------------- Production Static -------------------- */
 if (process.env.NODE_ENV === "production") {
-  console.log("🚀 Production mode detected, but build directory not found");
-  console.log("📁 Looking for build directory at:", path.join(__dirname, "../Frontend/build"));
-
-  app.get("/", (_req, res) => {
-    res.json({
-      message: "Backend API is running",
-      health: "/api/health",
-      test: "/api/test",
-      courses: "/api/courses/student/published-courses",
+  const buildPath = path.join(__dirname, "../frontend/build");
+  if (fs.existsSync(buildPath)) {
+    console.log("🚀 Production mode: serving frontend build from", buildPath);
+    app.use(express.static(buildPath));
+    app.get("*", (req, res) => {
+      if (!req.path.startsWith("/api") && !req.path.startsWith("/uploads")) {
+        res.sendFile(path.join(buildPath, "index.html"));
+      }
     });
-  });
+  } else {
+    console.log("📁 Build directory not found at:", buildPath);
+    app.get("/", (_req, res) => {
+      res.json({
+        message: "Backend API is running",
+        health: "/api/health",
+        test: "/api/test",
+      });
+    });
+  }
 }
 
 /* -------------------- Server Start -------------------- */
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3001);
 const HOST = "0.0.0.0";
 
 const server = app.listen(PORT, HOST, () => {
