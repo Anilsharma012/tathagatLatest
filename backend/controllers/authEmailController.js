@@ -62,10 +62,8 @@ exports.verifyEmailOtp = async (req, res) => {
     const { email, otpCode } = req.body;
     if (!email || !otpCode) return res.status(400).json({ message: "Email and OTP required" });
 
-    // Development mode: accept any 6-digit OTP and use real demo user from database
     if (process.env.NODE_ENV === 'development') {
       if (otpCode.length === 6 && /^\d+$/.test(otpCode)) {
-        // Use the same demo user as dev login for consistency
         const demoEmail = "demo@test.com";
         const demoUser = await User.findOneAndUpdate(
           { email: demoEmail },
@@ -86,9 +84,12 @@ exports.verifyEmailOtp = async (req, res) => {
           },
           { upsert: true, new: true }
         );
+
+        if (demoUser.isBanned) {
+          return res.status(403).json({ message: "Your account has been suspended. Please contact support." });
+        }
         
         const token = jwt.sign({ email: demoEmail, id: demoUser._id }, process.env.JWT_SECRET || 'test_secret_key_for_development', { expiresIn: '30d' });
-        console.log(`🔥 DEV MODE: OTP verified for ${email}, using demo user ID: ${demoUser._id}`);
 
         res.status(200).json({
           message: "OTP verified successfully",
@@ -103,9 +104,12 @@ exports.verifyEmailOtp = async (req, res) => {
       }
     }
 
-    // Production mode: use database
     let user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "User not found" });
+
+    if (user.isBanned) {
+      return res.status(403).json({ message: "Your account has been suspended. Please contact support." });
+    }
 
     // Get the most recent OTP for this user
     const otpRecord = await OTP.findOne({ userId: user._id }).sort({ createdAt: -1 });

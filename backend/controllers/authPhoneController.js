@@ -62,12 +62,15 @@ exports.verifyPhoneOtp = async (req, res) => {
       return res.status(400).json({ message: "Please enter a valid 6-digit OTP" });
     }
 
-    // Find user by phone number
     let user = await User.findOne({ phoneNumber });
     console.log(`[OTP Verify] User found: ${user ? user._id : 'NOT FOUND'}`);
     
     if (!user) {
       return res.status(404).json({ message: "User not found. Please request a new OTP." });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({ message: "Your account has been suspended. Please contact support." });
     }
 
     // Find the most recent OTP for this user
@@ -150,6 +153,10 @@ exports.loginWithPhone = async (req, res) => {
     let user = await User.findOne({ phoneNumber });
     if (!user || !user.isPhoneVerified) {
       return res.status(404).json({ message: "User not found or not verified" });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({ message: "Your account has been suspended. Please contact support." });
     }
 
     const otpRecord = await OTP.findOne({ userId: user._id }).sort({ createdAt: -1 });

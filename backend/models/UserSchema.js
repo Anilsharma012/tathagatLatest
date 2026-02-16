@@ -100,7 +100,19 @@ const userSchema = new mongoose.Schema({
 
     selectedExam: {
         type: String,
-        default: null, // ✅ CAT, XAT, UPSC, GRE, etc.
+        default: null,
+    },
+    isBanned: {
+        type: Boolean,
+        default: false,
+    },
+    bannedAt: {
+        type: Date,
+        default: null,
+    },
+    bannedReason: {
+        type: String,
+        default: null,
     },
     createdAt: {
         type: Date,

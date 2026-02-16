@@ -733,7 +733,9 @@ exports.adminEnrollUser = async (req, res) => {
 
 exports.adminGetAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find({}).select("name price description published courseType createdBy").sort({ createdAt: -1 });
+    const courses = await Course.find({})
+      .select("name price oldPrice description published courseType createdBy validityMonths startDate endDate isActive locked thumbnail")
+      .sort({ createdAt: -1 });
     res.status(200).json({ success: true, courses });
   } catch (error) {
     console.error("adminGetAllCourses error:", error);
@@ -757,8 +759,8 @@ exports.adminGetAllUsers = async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const total = await User.countDocuments(filter);
     const users = await User.find(filter)
-      .select("name email phoneNumber selectedCategory selectedExam enrolledCourses createdAt")
-      .populate("enrolledCourses.courseId", "name price")
+      .select("name email phoneNumber selectedCategory selectedExam enrolledCourses createdAt isBanned bannedAt bannedReason isEmailVerified isPhoneVerified isOnboardingComplete gender city state dob targetYear")
+      .populate("enrolledCourses.courseId", "name price courseType")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -898,5 +900,386 @@ exports.manualUploadPayment = async (req, res) => {
   } catch (e) {
     console.error('manualUploadPayment error:', e);
     res.status(500).json({ success: false, message: 'Failed to create manual payment', error: e.message });
+  }
+};
+
+exports.adminGetUserDetail = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId)
+      .populate("enrolledCourses.courseId", "name price courseType validityMonths startDate endDate published");
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const payments = await Payment.find({ userId })
+      .populate("courseId", "name price")
+      .sort({ createdAt: -1 });
+
+    const Enrollment = require("../models/Enrollment");
+    const enrollments = await Enrollment.find({ userId })
+      .populate("courseId", "name price courseType")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, user, payments, enrollments });
+  } catch (error) {
+    console.error("adminGetUserDetail error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch user details", error: error.message });
+  }
+};
+
+exports.adminUpdateUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, email, phoneNumber, gender, city, state, selectedCategory, selectedExam, targetYear, dob } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (email && email !== user.email) {
+      const existing = await User.findOne({ email, _id: { $ne: userId } });
+      if (existing) return res.status(400).json({ success: false, message: "Email already in use" });
+    }
+    if (phoneNumber && phoneNumber !== user.phoneNumber) {
+      const existing = await User.findOne({ phoneNumber, _id: { $ne: userId } });
+      if (existing) return res.status(400).json({ success: false, message: "Phone number already in use" });
+    }
+
+    if (name !== undefined) user.name = name;
+    if (email !== undefined) user.email = email;
+    if (phoneNumber !== undefined) user.phoneNumber = phoneNumber;
+    if (gender !== undefined) user.gender = gender;
+    if (city !== undefined) user.city = city;
+    if (state !== undefined) user.state = state;
+    if (selectedCategory !== undefined) user.selectedCategory = selectedCategory;
+    if (selectedExam !== undefined) user.selectedExam = selectedExam;
+    if (targetYear !== undefined) user.targetYear = targetYear;
+    if (dob !== undefined) user.dob = dob;
+
+    await user.save();
+
+    res.status(200).json({ success: true, message: "User updated successfully", user });
+  } catch (error) {
+    console.error("adminUpdateUser error:", error);
+    res.status(500).json({ success: false, message: "Failed to update user", error: error.message });
+  }
+};
+
+exports.adminDeleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (user.role === "admin") {
+      return res.status(403).json({ success: false, message: "Cannot delete admin users" });
+    }
+
+    const Enrollment = require("../models/Enrollment");
+    await Enrollment.deleteMany({ userId });
+    await Payment.deleteMany({ userId });
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    console.error("adminDeleteUser error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete user", error: error.message });
+  }
+};
+
+exports.adminBanUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { reason } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.isBanned = true;
+    user.bannedAt = new Date();
+    user.bannedReason = reason || "Banned by admin";
+    await user.save();
+
+    res.status(200).json({ success: true, message: "User banned successfully", user });
+  } catch (error) {
+    console.error("adminBanUser error:", error);
+    res.status(500).json({ success: false, message: "Failed to ban user", error: error.message });
+  }
+};
+
+exports.adminUnbanUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.isBanned = false;
+    user.bannedAt = null;
+    user.bannedReason = null;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "User unbanned successfully", user });
+  } catch (error) {
+    console.error("adminUnbanUser error:", error);
+    res.status(500).json({ success: false, message: "Failed to unban user", error: error.message });
+  }
+};
+
+exports.adminGetPendingRegistrations = async (req, res) => {
+  try {
+    const { search, page = 1, limit = 30 } = req.query;
+    const filter = {
+      role: "student",
+      $or: [
+        { isOnboardingComplete: false },
+        { isEmailVerified: false, isPhoneVerified: false },
+      ],
+    };
+
+    if (search) {
+      filter.$and = [
+        {
+          $or: [
+            { name: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } },
+            { phoneNumber: { $regex: search, $options: "i" } },
+          ],
+        },
+      ];
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const total = await User.countDocuments(filter);
+    const users = await User.find(filter)
+      .select("name email phoneNumber isEmailVerified isPhoneVerified isOnboardingComplete selectedCategory createdAt")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    res.status(200).json({ success: true, users, total, page: parseInt(page), totalPages: Math.ceil(total / parseInt(limit)) });
+  } catch (error) {
+    console.error("adminGetPendingRegistrations error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch pending registrations", error: error.message });
+  }
+};
+
+exports.adminGetPayments = async (req, res) => {
+  try {
+    const { status, search, page = 1, limit = 30 } = req.query;
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const matchStage = {};
+    if (status) matchStage.status = status;
+
+    const pipeline = [
+      { $match: matchStage },
+      { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "user" } },
+      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+      { $lookup: { from: "courses", localField: "courseId", foreignField: "_id", as: "course" } },
+      { $unwind: { path: "$course", preserveNullAndEmptyArrays: true } },
+    ];
+
+    if (search) {
+      const s = search.trim();
+      pipeline.push({
+        $match: {
+          $or: [
+            { "user.name": { $regex: s, $options: "i" } },
+            { "user.email": { $regex: s, $options: "i" } },
+            { "course.name": { $regex: s, $options: "i" } },
+          ],
+        },
+      });
+    }
+
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const countResult = await Payment.aggregate(countPipeline);
+    const total = countResult.length > 0 ? countResult[0].total : 0;
+
+    pipeline.push({ $sort: { createdAt: -1 } });
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limitNum });
+    pipeline.push({
+      $project: {
+        _id: 1, amount: 1, status: 1, paymentMethod: 1, razorpayPaymentId: 1, razorpayOrderId: 1, createdAt: 1, updatedAt: 1,
+        userId: { _id: "$user._id", name: "$user.name", email: "$user.email", phoneNumber: "$user.phoneNumber" },
+        courseId: { _id: "$course._id", name: "$course.name", price: "$course.price" },
+      },
+    });
+
+    const payments = await Payment.aggregate(pipeline);
+
+    res.status(200).json({ success: true, payments, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
+  } catch (error) {
+    console.error("adminGetPayments error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch payments", error: error.message });
+  }
+};
+
+exports.adminApprovePayment = async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    const adminId = req.user.id;
+
+    const payment = await Payment.findById(paymentId);
+    if (!payment) {
+      return res.status(404).json({ success: false, message: "Payment not found" });
+    }
+
+    if (payment.status === "paid") {
+      return res.status(400).json({ success: false, message: "Payment already approved" });
+    }
+
+    payment.status = "paid";
+    payment.offlineReviewedAt = new Date();
+    payment.offlineReviewedBy = adminId;
+    await payment.save();
+
+    const user = await User.findById(payment.userId);
+    if (user) {
+      const courseEntry = user.enrolledCourses.find(
+        (c) => c.courseId && c.courseId.toString() === payment.courseId.toString()
+      );
+      if (courseEntry) {
+        courseEntry.status = "unlocked";
+      } else {
+        user.enrolledCourses.push({ courseId: payment.courseId, status: "unlocked", enrolledAt: new Date() });
+      }
+      await user.save();
+    }
+
+    const Enrollment = require("../models/Enrollment");
+    const course = await Course.findById(payment.courseId);
+    const months = course?.validityMonths || 12;
+    const validTill = new Date();
+    validTill.setMonth(validTill.getMonth() + months);
+    await Enrollment.findOneAndUpdate(
+      { userId: payment.userId, courseId: payment.courseId },
+      { userId: payment.userId, courseId: payment.courseId, joinedAt: new Date(), validTill, status: "active" },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json({ success: true, message: "Payment approved and course unlocked", payment });
+  } catch (error) {
+    console.error("adminApprovePayment error:", error);
+    res.status(500).json({ success: false, message: "Failed to approve payment", error: error.message });
+  }
+};
+
+exports.adminRejectPayment = async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    const { reason } = req.body;
+
+    const payment = await Payment.findById(paymentId);
+    if (!payment) {
+      return res.status(404).json({ success: false, message: "Payment not found" });
+    }
+
+    payment.status = "rejected";
+    payment.offlineNote = reason || "Rejected by admin";
+    payment.offlineReviewedAt = new Date();
+    payment.offlineReviewedBy = req.user.id;
+    await payment.save();
+
+    res.status(200).json({ success: true, message: "Payment rejected", payment });
+  } catch (error) {
+    console.error("adminRejectPayment error:", error);
+    res.status(500).json({ success: false, message: "Failed to reject payment", error: error.message });
+  }
+};
+
+exports.adminBulkUploadUsers = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "CSV file is required" });
+    }
+
+    const csv = require("csvtojson");
+    const rows = await csv().fromString(req.file.buffer.toString());
+
+    if (!rows.length) {
+      return res.status(400).json({ success: false, message: "CSV file is empty" });
+    }
+
+    const results = { created: 0, skipped: 0, errors: [] };
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      try {
+        const name = (row.name || row.Name || "").trim();
+        const email = (row.email || row.Email || "").trim().toLowerCase();
+        const phoneNumber = (row.phone || row.phoneNumber || row.Phone || row.PhoneNumber || "").trim();
+        const gender = row.gender || row.Gender || undefined;
+        const city = row.city || row.City || undefined;
+        const selectedCategory = row.category || row.Category || row.selectedCategory || "CAT";
+        const selectedExam = row.exam || row.Exam || row.selectedExam || undefined;
+
+        if (!name || (!email && !phoneNumber)) {
+          results.errors.push({ row: i + 2, message: "Name and at least email or phone required", data: row });
+          results.skipped++;
+          continue;
+        }
+
+        if (email) {
+          const existing = await User.findOne({ email });
+          if (existing) {
+            results.errors.push({ row: i + 2, message: `Email ${email} already exists`, data: row });
+            results.skipped++;
+            continue;
+          }
+        }
+        if (phoneNumber) {
+          const existing = await User.findOne({ phoneNumber });
+          if (existing) {
+            results.errors.push({ row: i + 2, message: `Phone ${phoneNumber} already exists`, data: row });
+            results.skipped++;
+            continue;
+          }
+        }
+
+        const newUser = new User({
+          name,
+          email: email || undefined,
+          phoneNumber: phoneNumber || undefined,
+          gender,
+          city,
+          selectedCategory,
+          selectedExam,
+          role: "student",
+          isEmailVerified: false,
+          isPhoneVerified: false,
+          isOnboardingComplete: false,
+          enrolledCourses: [],
+        });
+        await newUser.save();
+        results.created++;
+      } catch (err) {
+        results.errors.push({ row: i + 2, message: err.message, data: row });
+        results.skipped++;
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Bulk upload complete: ${results.created} created, ${results.skipped} skipped`,
+      results,
+    });
+  } catch (error) {
+    console.error("adminBulkUploadUsers error:", error);
+    res.status(500).json({ success: false, message: "Failed to process bulk upload", error: error.message });
   }
 };

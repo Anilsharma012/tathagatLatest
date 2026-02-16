@@ -1,15 +1,16 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
 
 const adminController = require("../controllers/AdminController");
-const { adminAuth } = require("../middleware/authMiddleware"); // Token verify middleware (auth check)
+const { adminAuth } = require("../middleware/authMiddleware");
 const upload = require("../middleware/uploadMiddleware");
+const csvUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 const { getAdminDashboardMetrics } = require("../controllers/AdminDashboardController");
 
 router.get("/dashboard-metrics", adminAuth, getAdminDashboardMetrics);
 
-// Temporary route to create admin - use only once then delete
-router.post("/create", adminController.createAdmin);
+router.post("/create", adminAuth, adminController.createAdmin);
 
 // Login route
 router.post("/login", adminController.loginAdmin);
@@ -43,6 +44,16 @@ router.get("/all-users-list", adminAuth, adminController.adminGetAllUsers);
 router.get("/all-courses-list", adminAuth, adminController.adminGetAllCourses);
 router.post("/enroll-user", adminAuth, adminController.adminEnrollUser);
 router.post("/remove-enrollment", adminAuth, adminController.adminRemoveEnrollment);
+router.get("/user-detail/:userId", adminAuth, adminController.adminGetUserDetail);
+router.put("/update-user/:userId", adminAuth, adminController.adminUpdateUser);
+router.delete("/delete-user/:userId", adminAuth, adminController.adminDeleteUser);
+router.post("/ban-user/:userId", adminAuth, adminController.adminBanUser);
+router.post("/unban-user/:userId", adminAuth, adminController.adminUnbanUser);
+router.get("/pending-registrations", adminAuth, adminController.adminGetPendingRegistrations);
+router.get("/all-payments", adminAuth, adminController.adminGetPayments);
+router.put("/approve-payment/:paymentId", adminAuth, adminController.adminApprovePayment);
+router.put("/reject-payment/:paymentId", adminAuth, adminController.adminRejectPayment);
+router.post("/bulk-upload-users", adminAuth, csvUpload.single("file"), adminController.adminBulkUploadUsers);
 
 // Offline payment management
 router.get("/offline-payments", adminAuth, adminController.listOfflinePayments);
