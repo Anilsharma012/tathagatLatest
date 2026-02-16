@@ -46,6 +46,12 @@ TathaGat is a full-stack education platform for CAT/XAT/SNAP exam preparation. I
 - **Frontend**: `cd frontend && react-scripts start` (port 5000, webview)
 
 ## Recent Changes
+- 2026-02-16: Super Admin User Management feature
+  - Added 5 admin API endpoints: create user, enroll user, get all users, get all courses, remove enrollment
+  - Frontend UserManagement page at `/admin/user-management` with search, create user modal, enroll modal
+  - Enrollment operations update both User.enrolledCourses and Enrollment model with rollback on failure
+  - Added sidebar link in AdminSidebar with FaUserPlus icon
+  - Platform uses OTP-based auth (email/phone), no password field needed for user creation
 - 2026-02-14: Initial Replit setup - migrated from GitHub import
   - Moved sensitive credentials from `.env` to Replit Secrets
   - Configured workflows for frontend and backend
