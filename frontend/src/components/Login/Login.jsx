@@ -1,121 +1,60 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./Login.css";
-import { FaArrowLeft } from "react-icons/fa";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "../../utils/axiosConfig";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import TGLOGO from "../../images/tgLOGO.png";
 
 const Login = ({ onClose, setUser }) => {
-  const [step, setStep] = useState("choice");
-  const [email, setEmail] = useState("");
-  const [emailOtp, setEmailOtp] = useState(["", "", "", "", "", ""]);
   const [phone, setPhone] = useState("");
-  const [phoneOtp, setPhoneOtp] = useState(["", "", "", "", "", ""]);
-  const [otpSuccess, setOtpSuccess] = useState(false);
-  const [otpError, setOtpError] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const navigate = useNavigate();
 
-  const emailOtpRefs = useRef([]);
-  const phoneOtpRefs = useRef([]);
-
   useEffect(() => {
     const checkExistingLogin = async () => {
       const token = localStorage.getItem("authToken");
       const user = localStorage.getItem("user");
-      
+
       if (token && user) {
         try {
           const response = await axios.get("/api/auth/verify-token", {
             headers: { Authorization: `Bearer ${token}` }
           });
-          
+
           if (response.data.valid) {
-            console.log("✅ User already logged in, redirecting to dashboard");
             setToastMessage("Already logged in! Redirecting...");
-            
             if (onClose && typeof onClose === 'function') {
               onClose();
             }
-            
             setTimeout(() => {
               handlePostLoginRedirect("/student/dashboard");
             }, 500);
             return;
           }
-        } catch (error) {
-          console.log("Token verification failed, showing login form");
+        } catch (err) {
           localStorage.removeItem("authToken");
           localStorage.removeItem("user");
         }
       }
       setIsCheckingAuth(false);
     };
-    
+
     checkExistingLogin();
   }, []);
 
-  // Demo login function
-  const handleDemoLogin = async () => {
-    if (isLoggingIn) return; // Prevent multiple clicks
-
-    setIsLoggingIn(true);
-    try {
-      // Clear previous errors/messages
-      setOtpError("");
-      setToastMessage("");
-
-      console.log("🔍 Starting demo login...");
-      const { fetchWithErrorHandling } = await import('../../utils/api');
-      const response = await fetchWithErrorHandling("/api/dev/login", { method: 'POST' });
-
-      if (response.success && response.token) {
-        // Store authentication data
-        localStorage.setItem("authToken", response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
-
-        // Set user context if setUser function exists
-        if (setUser && typeof setUser === 'function') {
-          setUser(response.user);
-        }
-
-        console.log("✅ Demo login successful");
-        setToastMessage("Demo login successful! Welcome " + response.user.name);
-
-        // Wait a moment to show success message, then redirect
-        setTimeout(() => {
-          // Close login modal and redirect (only if onClose function exists)
-          if (onClose && typeof onClose === 'function') {
-            onClose();
-          }
-          handlePostLoginRedirect("/student/dashboard");
-        }, 1000);
-
-      } else {
-        setOtpError("Demo login failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("❌ Demo login error:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Unknown error occurred";
-      setOtpError("Demo login failed: " + errorMessage);
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
-  // Helper function to handle post-login redirect
   const handlePostLoginRedirect = (serverRedirectTo) => {
-    // Check for pending course enrollment
     const pendingCourse = localStorage.getItem('pendingCourse');
     const redirectAfterLogin = localStorage.getItem('redirectAfterLogin');
 
     if (pendingCourse) {
       const course = JSON.parse(pendingCourse);
-      localStorage.removeItem('pendingCourse'); // Clean up
+      localStorage.removeItem('pendingCourse');
       navigate('/course-purchase', {
         state: {
           ...course,
@@ -132,144 +71,59 @@ const Login = ({ onClose, setUser }) => {
         }
       });
     } else if (redirectAfterLogin) {
-      localStorage.removeItem('redirectAfterLogin'); // Clean up
+      localStorage.removeItem('redirectAfterLogin');
       navigate(redirectAfterLogin);
     } else {
-      // ✅ Use server redirect path - defaults to /user-details for new users
-      navigate(serverRedirectTo || "/user-details");
+      navigate(serverRedirectTo || "/student/dashboard");
     }
   };
 
-  const sendOtpEmail = async () => {
-    try {
-      await axios.post("/api/auth/email/send-email", {
-        email,
-      });
-      setStep("verify_email");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (isLoggingIn) return;
 
-      //     Show success toast
-      setToastMessage("📩 OTP sent successfully!");
-      setTimeout(() => setToastMessage(""), 3000);
-    } catch (err) {
-      console.error("Error sending email OTP", err);
-      const status = err?.response?.status;
-      if (status === 404) {
-        setOtpError('Server endpoint not found (404). Ensure the backend API is reachable and API base is configured.');
-      } else if (err?.message && err.message.includes('Network')) {
-        setOtpError('Network error while sending OTP. Check your connection or backend availability.');
-      } else {
-        setOtpError("Failed to send OTP. Try again.");
-      }
-      setTimeout(() => setOtpError(""), 4000);
+    setError("");
+    setToastMessage("");
+
+    if (!phone || !password) {
+      setError("Please enter your mobile number and password.");
+      return;
     }
-  };
 
-  const verifyOtpEmail = async () => {
-    const otpCode = emailOtp.join("");
-
-    try {
-      const response = await axios.post(
-        "/api/auth/email/verify",
-        { email, otpCode }
-      );
-
-      // ✅ Save token and user
-      localStorage.setItem("authToken", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-
-      setUser(response.data.user); // Optional: for context/state
-
-      // ✅ Show success toast instead of box
-      setToastMessage("✅ OTP verified successfully!");
-
-      // ✅ Redirect after short delay
-      setTimeout(() => {
-        setToastMessage("");
-        handlePostLoginRedirect(response.data.redirectTo);
-      }, 2000);
-    } catch (err) {
-      console.error('verifyOtpEmail error', err);
-      const status = err?.response?.status;
-      if (status === 404) {
-        setOtpError('Server endpoint not found (404). Ensure the backend API is reachable and API base is configured.');
-      } else if (err?.message && err.message.includes('Network')) {
-        setOtpError('Network error while verifying OTP. Check your connection or backend availability.');
-      } else {
-        setOtpError("❌ Invalid OTP. Please try again.");
-      }
-      setTimeout(() => setOtpError(""), 4000);
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      setError("Please enter a valid 10-digit Indian mobile number.");
+      return;
     }
-  };
 
-  const sendOtpPhone = async () => {
+    setIsLoggingIn(true);
     try {
-      await axios.post("/api/auth/phone/send-otp", {
+      const response = await axios.post("/api/auth/phone/login-password", {
         phoneNumber: phone,
+        password,
       });
-      setStep("verify_phone");
 
-      // ✅ Show toast
-      setToastMessage("📩 OTP sent successfully!");
-      setTimeout(() => setToastMessage(""), 3000);
-    } catch (err) {
-      console.error("Error sending SMS OTP", err);
-      const status = err?.response?.status;
-      if (status === 404) {
-        setOtpError('Server endpoint not found (404). Ensure the backend API is reachable and API base is configured.');
-      } else if (err?.message && err.message.includes('Network')) {
-        setOtpError('Network error while sending OTP. Check your connection or backend availability.');
-      } else {
-        setOtpError("Failed to send OTP. Try again.");
-      }
-      setTimeout(() => setOtpError(""), 4000);
-    }
-  };
-
-  const verifyOtpPhone = async () => {
-    const otpCode = phoneOtp.join("");
-    try {
-      const response = await axios.post(
-        "/api/auth/phone/mobileVerify-otp",
-        { phoneNumber: phone, otpCode }
-      );
-
-      // ✅ Save token and user
       localStorage.setItem("authToken", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      setUser(response.data.user); // Optional: for context/state
-
-      // ✅ Show success toast instead of box
-      setToastMessage("✅ OTP verified successfully!");
-
-      // ✅ Redirect after short delay
-      setTimeout(() => {
-        setToastMessage("");
-        handlePostLoginRedirect(response.data.redirectTo);
-      }, 2000);
-    } catch (err) {
-      console.error('verifyOtpPhone error', err);
-      const status = err?.response?.status;
-      if (status === 404) {
-        setOtpError('Server endpoint not found (404). Ensure the backend API is reachable and API base is configured.');
-      } else if (err?.message && err.message.includes('Network')) {
-        setOtpError('Network error while verifying OTP. Check your connection or backend availability.');
-      } else {
-        setOtpError("❌ Invalid OTP. Please try again.");
+      if (setUser && typeof setUser === 'function') {
+        setUser(response.data.user);
       }
-      setTimeout(() => setOtpError(""), 4000);
+
+      setToastMessage("Login successful!");
+
+      setTimeout(() => {
+        if (onClose && typeof onClose === 'function') {
+          onClose();
+        }
+        handlePostLoginRedirect(response.data.redirectTo);
+      }, 1000);
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Login failed. Please try again.";
+      setError(msg);
+      setTimeout(() => setError(""), 5000);
+    } finally {
+      setIsLoggingIn(false);
     }
-  };
-
-  const handleOtpChange = (value, index, type) => {
-    const otp = type === "email" ? [...emailOtp] : [...phoneOtp];
-    otp[index] = value;
-
-    if (type === "email") setEmailOtp(otp);
-    else setPhoneOtp(otp);
-
-    const refs = type === "email" ? emailOtpRefs : phoneOtpRefs;
-    if (value && index < 5) refs.current[index + 1].focus();
   };
 
   if (isCheckingAuth) {
@@ -289,13 +143,10 @@ const Login = ({ onClose, setUser }) => {
     <div className="tllogin-fullscreen-wrapper">
       <div className="tllogin-popup" onClick={(e) => e.stopPropagation()}>
 
-        {/* ✅ Toast Messages Top pe (Inside popup) */}
-        {otpError && (
+        {error && (
           <div className="toast-top">
-            <span>{otpError}</span>
-            <button className="toast-close-btn" onClick={() => setOtpError("")}>
-
-            </button>
+            <span>{error}</span>
+            <button className="toast-close-btn" onClick={() => setError("")}>x</button>
           </div>
         )}
         {toastMessage && (
@@ -319,162 +170,66 @@ const Login = ({ onClose, setUser }) => {
 
         <div className="tllogin-right-panel">
           <div className="tllogin-box">
-            {step !== "choice" && (
-              <div className="tllogin-back-icon" onClick={() => setStep("choice")}>
-                <FaArrowLeft /> Back
-              </div>
-            )}
+            <div className="tllogin-lock-icon">🔒</div>
+            <h2>Welcome Back</h2>
+            <p>Login to your account</p>
 
-            {step === "choice" && (
-              <>
-                <div className="tllogin-lock-icon">🔒</div>
-                <h2>Welcome to TathaGat</h2>
-                <p>Let's get started</p>
-                <button className="tllogin-btn" onClick={() => setStep("phone")}>
-                  Login with phone number
-                </button>
-         
+            <form onSubmit={handleLogin}>
+              <input
+                type="tel"
+                placeholder="Mobile Number"
+                className="tlotp-input"
+                value={phone}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  setPhone(val);
+                }}
+                maxLength={10}
+              />
 
-                {otpError && (
-                  <div style={{
-                    color: '#dc3545',
-                    fontSize: '14px',
-                    textAlign: 'center',
-                    marginTop: '10px',
-                    padding: '10px',
-                    background: '#f8d7da',
-                    border: '1px solid #f5c6cb',
-                    borderRadius: '5px'
-                  }}>
-                    {otpError}
-                  </div>
-                )}
-
-                {toastMessage && (
-                  <div style={{
-                    color: '#155724',
-                    fontSize: '14px',
-                    textAlign: 'center',
-                    marginTop: '10px',
-                    padding: '10px',
-                    background: '#d4edda',
-                    border: '1px solid #c3e6cb',
-                    borderRadius: '5px'
-                  }}>
-                    {toastMessage}
-                  </div>
-                )}
-              </>
-            )}
-
-            {step === "email" && (
-              <>
-                <h2>Login via Email</h2>
+              <div style={{ position: 'relative' }}>
                 <input
-                  type="email"
-                  placeholder="Enter your email"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
                   className="tlotp-input"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-                <button className="tllogin-btn" onClick={sendOtpEmail}>
-                  Send OTP
-                </button>
-              </>
-            )}
-
-            {step === "verify_email" && (
-              <>
-                <div className="tllogin-lock-icon">📩</div>
-                <h2>Check your email</h2>
-                <p>
-                  Enter the code sent to <strong>{email}</strong>
-                </p>
-                <div className="tlotp-boxes">
-                  {emailOtp.map((d, i) => (
-                    <input
-                      key={i}
-                      maxLength="1"
-                      className="tlotp-digit"
-                      value={d}
-                      onChange={(e) =>
-                        handleOtpChange(e.target.value, i, "email")
-                      }
-                      ref={(ref) => (emailOtpRefs.current[i] = ref)}
-                    />
-                  ))}
-                </div>
-                <button className="tllogin-btn" onClick={verifyOtpEmail}>
-                  Verify
-                </button>
-                <p className="tlresend-text">
-                  Didn't receive the code?{" "}
-                  <span className="tlresend-link" onClick={sendOtpEmail}>
-                    Resend
-                  </span>
-                </p>
-              </>
-            )}
-
-            {step === "phone" && (
-              <>
-                <h2>Login via Phone</h2>
-                <input
-                  type="text"
-                  placeholder="Enter your phone number"
-                  className="tlotp-input"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-                <button className="tllogin-btn" onClick={sendOtpPhone}>
-                  Send OTP
-                </button>
-              </>
-            )}
-
-            {step === "verify_phone" && (
-              <div className="login-otp-verification-box">
-                <div className="login-otp-icon">
-                  <span role="img" aria-label="lock">🔐</span>
-                </div>
-                <h3>We just sent an SMS</h3>
-                <p>
-                  Enter the security code we sent to
-                  <br />
-                  <strong>+91 {phone}</strong>
-                </p>
-
-                <div className="tlotp-boxes">
-                  {phoneOtp.map((d, i) => (
-                    <input
-                      key={i}
-                      maxLength="1"
-                      className="tlotp-digit tlotp-square"
-                      value={d}
-                      onChange={(e) =>
-                        handleOtpChange(e.target.value, i, "phone")
-                      }
-                      ref={(ref) => (phoneOtpRefs.current[i] = ref)}
-                    />
-                  ))}
-                </div>
-
-                <button className="tllogin-btn" onClick={verifyOtpPhone}>
-                  Verify
-                </button>
-                <p className="tlresend-text">
-                  Didn't receive the code?{" "}
-                  <span className="tlresend-link" onClick={sendOtpPhone}>
-                    Resend
-                  </span>
-                </p>
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    cursor: 'pointer',
+                    color: '#888',
+                    fontSize: '16px',
+                  }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
               </div>
-            )}
+
+              <button
+                type="submit"
+                className="tllogin-btn"
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? "Logging in..." : "Login"}
+              </button>
+            </form>
+
+            <p className="help-text" style={{ marginTop: '20px' }}>
+              Don't have an account?{" "}
+              <Link to="/signup" style={{ color: '#d3544b', fontWeight: 600, textDecoration: 'none' }}>
+                Sign Up
+              </Link>
+            </p>
           </div>
         </div>
       </div>
     </div>
-
   );
 };
 

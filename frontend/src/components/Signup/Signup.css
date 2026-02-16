@@ -1,0 +1,30 @@
+.signup-box {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.signup-form .tlotp-input {
+  margin: 6px 0;
+}
+
+.signup-row {
+  display: flex;
+  gap: 10px;
+}
+
+.signup-select,
+.signup-date {
+  flex: 1;
+}
+
+.signup-select {
+  appearance: auto;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .signup-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}

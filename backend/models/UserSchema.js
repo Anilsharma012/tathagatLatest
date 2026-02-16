@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -12,6 +13,10 @@ const userSchema = new mongoose.Schema({
         unique: true,
         sparse: true,
         match: [/^\d{10}$/, "Invalid phone number"],
+    },
+    password: {
+        type: String,
+        default: null,
     },
     isEmailVerified: {
         type: Boolean,
@@ -121,6 +126,22 @@ const userSchema = new mongoose.Schema({
     
 }
 ,{ timestamps: true });
+
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password") || !this.password) return next();
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    if (!this.password) return false;
+    return bcrypt.compare(candidatePassword, this.password);
+};
 
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);
 

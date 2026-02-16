@@ -46,6 +46,21 @@ TathaGat is a full-stack education platform for CAT/XAT/SNAP exam preparation. I
 - **Frontend**: `cd frontend && react-scripts start` (port 5000, webview)
 
 ## Recent Changes
+- 2026-02-16: Authentication Flow Migration (Password-Based)
+  - Added password field to UserSchema with bcrypt hashing (pre-save hook) and comparePassword method
+  - New backend endpoints: /api/auth/phone/register (signup with OTP), /api/auth/phone/verify-registration, /api/auth/phone/login-password
+  - Login page redesigned: mobile + password fields, show/hide password toggle, links to Signup
+  - New Signup page: Full Name, Mobile, Password, Confirm Password, City, Gender, DOB, OTP verification step
+  - Signup route added at /signup in App.js
+  - AdminLayout import fix in App.js (was undefined)
+  - Ban enforcement in password-based login
+  - Development mode OTP bypass for testing
+- 2026-02-16: Admin UI/UX Fixes
+  - Collapsible sidebar sections (Courses, Tests, Content, Live Classes, Analytics, Users & Permissions)
+  - LiveBatchManagement wrapped with AdminLayout
+  - User Management search icon alignment fix
+  - Student Reports scroll control
+  - All Teachers and Permissions sidebar links
 - 2026-02-16: Comprehensive Super Admin User Management
   - 3-tab UI: All Users, Pending Registrations, Payments with search/filters/pagination
   - Backend endpoints: user CRUD, ban/unban, pending registrations, payments (aggregation pipeline), bulk CSV upload, approve/reject payment

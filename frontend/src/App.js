@@ -19,6 +19,7 @@ import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 
 import Login from "./components/Login/Login";
+import Signup from "./components/Signup/Signup";
 import AuthLogin from "./pages/Auth/AuthLogin";
 import StudentOnboarding from "./pages/Student/Onboarding/StudentOnboarding";
 import StudentProfile from "./pages/Student/Profile/StudentProfile";
@@ -56,6 +57,7 @@ import CoursePurchase from "./pages/CousePurchase/CoursePurchase";
 import StudentLayout from "./pages/Student/StudentLayout/StudentLayout";
 
 import AdminDashboard from "./pages/mainAdmin/AdminDashboard";
+import AdminLayout from "./pages/mainAdmin/AdminLayout/AdminLayout";
 import AllStudents from "./pages/mainAdmin/AllStudents/AllStudents";
 import AllTeachers from "./pages/mainAdmin/AllTeachers/AllTeachers";
 import AdminProfile from "./pages/mainAdmin/AdminProfile/AdminProfile";
@@ -227,6 +229,7 @@ const AppContent = () => {
         {/* Public and user routes */}
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login setUser={setUser} onClose={() => {}} />} />
+        <Route path="/signup" element={<Signup setUser={setUser} />} />
 
         {/* Admin routes */}
         <Route path="/admin" element={<AdminLogin />} />
@@ -518,7 +521,9 @@ const AppContent = () => {
           path="/admin/live-batches"
           element={
             <PrivateRoute tokenName="adminToken">
-              <LiveBatchManagement />
+              <AdminLayout>
+                <LiveBatchManagement />
+              </AdminLayout>
             </PrivateRoute>
           }
         />

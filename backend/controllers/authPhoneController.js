@@ -164,7 +164,6 @@ exports.loginWithPhone = async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP" });
     }
 
-    // Delete used OTP
     await OTP.deleteOne({ _id: otpRecord._id });
 
     const token = jwt.sign(
@@ -176,6 +175,194 @@ exports.loginWithPhone = async (req, res) => {
     res.status(200).json({ message: "Login successful!", token, user });
   } catch (error) {
     console.error("Error in login:", error);
+    res.status(500).json({ message: "Login failed. Please try again.", error: error.message });
+  }
+};
+
+exports.registerWithPhone = async (req, res) => {
+  try {
+    const { name, phoneNumber, password, city, gender, dob } = req.body;
+
+    if (!name || !phoneNumber || !password) {
+      return res.status(400).json({ message: "Name, phone number, and password are required" });
+    }
+    if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
+      return res.status(400).json({ message: "Please enter a valid 10-digit Indian mobile number" });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    const existing = await User.findOne({ phoneNumber });
+    if (existing && existing.isPhoneVerified && existing.password) {
+      return res.status(400).json({ message: "Account already exists. Please login." });
+    }
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    let user;
+    if (existing) {
+      existing.name = name;
+      existing.password = password;
+      existing.city = city || existing.city;
+      existing.gender = gender || existing.gender;
+      existing.dob = dob || existing.dob;
+      existing.isPhoneVerified = false;
+      await existing.save();
+      user = existing;
+    } else {
+      user = new User({
+        name,
+        phoneNumber,
+        password,
+        city: city || null,
+        gender: gender || null,
+        dob: dob || null,
+        isPhoneVerified: false,
+      });
+      await user.save();
+    }
+
+    await OTP.deleteMany({ userId: user._id });
+    await OTP.create({
+      userId: user._id,
+      otpCode,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    });
+
+    try {
+      await sendOtpPhoneUtil(phoneNumber, otpCode);
+    } catch (smsErr) {
+      console.error("SMS send failed:", smsErr.message);
+    }
+
+    console.log(`[Register] OTP for ${phoneNumber}: ${otpCode}`);
+
+    res.status(200).json({
+      message: "OTP sent to your phone number. Please verify.",
+      phoneNumber: phoneNumber.slice(0, 5) + "XXXXX",
+    });
+  } catch (error) {
+    console.error("Error in registration:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "This phone number or email is already registered." });
+    }
+    res.status(500).json({ message: "Registration failed. Please try again.", error: error.message });
+  }
+};
+
+exports.verifyRegistrationOtp = async (req, res) => {
+  try {
+    const { phoneNumber, otpCode } = req.body;
+    if (!phoneNumber || !otpCode) {
+      return res.status(400).json({ message: "Phone number and OTP are required" });
+    }
+
+    const user = await User.findOne({ phoneNumber });
+    if (!user) {
+      return res.status(404).json({ message: "User not found. Please register first." });
+    }
+
+    if (process.env.NODE_ENV === 'development' && /^\d{6}$/.test(otpCode)) {
+      user.isPhoneVerified = true;
+      user.isOnboardingComplete = true;
+      await user.save({ validateBeforeSave: false });
+
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "default_secret_key", { expiresIn: "30d" });
+      return res.status(200).json({
+        message: "Registration successful!",
+        token,
+        user: { _id: user._id, name: user.name, phoneNumber: user.phoneNumber, email: user.email },
+        redirectTo: "/student/dashboard",
+      });
+    }
+
+    const otpRecord = await OTP.findOne({ userId: user._id }).sort({ createdAt: -1 });
+    if (!otpRecord) {
+      return res.status(400).json({ message: "No OTP found. Please request a new one." });
+    }
+
+    const otpAge = Date.now() - new Date(otpRecord.createdAt).getTime();
+    if (otpAge > 5 * 60 * 1000) {
+      await OTP.deleteOne({ _id: otpRecord._id });
+      return res.status(400).json({ message: "OTP has expired. Please request a new one." });
+    }
+
+    if (otpRecord.otpCode !== otpCode) {
+      return res.status(400).json({ message: "Invalid OTP. Please try again." });
+    }
+
+    await OTP.deleteOne({ _id: otpRecord._id });
+
+    user.isPhoneVerified = true;
+    user.isOnboardingComplete = true;
+    await user.save({ validateBeforeSave: false });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "default_secret_key", { expiresIn: "30d" });
+
+    res.status(200).json({
+      message: "Registration successful!",
+      token,
+      user: { _id: user._id, name: user.name, phoneNumber: user.phoneNumber, email: user.email },
+      redirectTo: "/student/dashboard",
+    });
+  } catch (error) {
+    console.error("Error verifying registration OTP:", error);
+    res.status(500).json({ message: "Verification failed. Please try again.", error: error.message });
+  }
+};
+
+exports.loginWithPassword = async (req, res) => {
+  try {
+    const { phoneNumber, password } = req.body;
+    if (!phoneNumber || !password) {
+      return res.status(400).json({ message: "Phone number and password are required" });
+    }
+
+    if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
+      return res.status(400).json({ message: "Please enter a valid 10-digit phone number" });
+    }
+
+    const user = await User.findOne({ phoneNumber });
+    if (!user) {
+      return res.status(404).json({ message: "Account not found. Please register first." });
+    }
+
+    if (!user.password) {
+      return res.status(400).json({ message: "Please set a password by registering again, or use OTP login." });
+    }
+
+    if (!user.isPhoneVerified) {
+      return res.status(403).json({ message: "Your phone number is not verified. Please complete registration with OTP verification first." });
+    }
+
+    if (user.isBanned) {
+      return res.status(403).json({ message: "Your account has been suspended. Please contact support." });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid password. Please try again." });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "default_secret_key", { expiresIn: "30d" });
+
+    res.status(200).json({
+      message: "Login successful!",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        phoneNumber: user.phoneNumber,
+        email: user.email,
+        isPhoneVerified: user.isPhoneVerified,
+        isOnboardingComplete: user.isOnboardingComplete,
+        city: user.city,
+      },
+      redirectTo: "/student/dashboard",
+    });
+  } catch (error) {
+    console.error("Error in password login:", error);
     res.status(500).json({ message: "Login failed. Please try again.", error: error.message });
   }
 };
