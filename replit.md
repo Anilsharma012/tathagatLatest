@@ -55,6 +55,10 @@ TathaGat is a full-stack education platform for CAT/XAT/SNAP exam preparation. I
   - AdminLayout import fix in App.js (was undefined)
   - Ban enforcement in password-based login
   - Development mode OTP bypass for testing
+- 2026-02-16: Navigation & Scroll Fixes
+  - Student Dashboard: Auto-scroll to top when switching sidebar sections (Analysis & Reports, etc.)
+  - Admin Sidebar: Scroll position and collapsed/expanded state persisted across page navigations via sessionStorage
+  - Role Management: Added loading states and error feedback for API calls; improved empty state messaging
 - 2026-02-16: Admin UI/UX Fixes
   - Collapsible sidebar sections (Courses, Tests, Content, Live Classes, Analytics, Users & Permissions)
   - LiveBatchManagement wrapped with AdminLayout

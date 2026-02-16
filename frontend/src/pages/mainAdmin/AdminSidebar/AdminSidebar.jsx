@@ -1,12 +1,18 @@
-import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { FaTachometerAlt, FaBookOpen, FaUsers, FaUserGraduate, FaChalkboardTeacher, FaUserCircle, FaSignOutAlt, FaClipboardList, FaFileAlt, FaBullhorn, FaComments, FaGraduationCap, FaUniversity, FaBlog, FaYoutube, FaTrophy, FaFileInvoice, FaDownload, FaStar, FaCog, FaFilePdf, FaImages, FaUserPlus, FaChevronDown, FaChevronRight, FaUserShield, FaVideo, FaChartBar } from "react-icons/fa";
 import logo from "../../../images/tgLOGO.png";
 import "./AdminSidebar.css";
 
-const AdminSidebar = () => {
-  const navigate = useNavigate();
-  const [expandedSections, setExpandedSections] = useState({
+const STORAGE_KEY_SCROLL = "adminSidebarScrollPos";
+const STORAGE_KEY_SECTIONS = "adminSidebarSections";
+
+const getInitialSections = () => {
+  try {
+    const saved = sessionStorage.getItem(STORAGE_KEY_SECTIONS);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return {
     courses: true,
     tests: true,
     content: true,
@@ -15,20 +21,57 @@ const AdminSidebar = () => {
     liveClasses: true,
     users: true,
     settings: true,
-  });
+  };
+};
+
+const AdminSidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const sidebarRef = useRef(null);
+  const [expandedSections, setExpandedSections] = useState(getInitialSections);
+
+  useEffect(() => {
+    const el = sidebarRef.current;
+    if (!el) return;
+    const savedPos = sessionStorage.getItem(STORAGE_KEY_SCROLL);
+    if (savedPos) {
+      requestAnimationFrame(() => {
+        el.scrollTop = parseInt(savedPos, 10);
+      });
+    }
+  }, [location.pathname]);
+
+  const handleScroll = useCallback(() => {
+    if (sidebarRef.current) {
+      sessionStorage.setItem(STORAGE_KEY_SCROLL, String(sidebarRef.current.scrollTop));
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = sidebarRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   const toggleSection = (section) => {
-    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+    setExpandedSections((prev) => {
+      const next = { ...prev, [section]: !prev[section] };
+      try { sessionStorage.setItem(STORAGE_KEY_SECTIONS, JSON.stringify(next)); } catch {}
+      return next;
+    });
   };
 
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("adminToken");
+    sessionStorage.removeItem(STORAGE_KEY_SCROLL);
+    sessionStorage.removeItem(STORAGE_KEY_SECTIONS);
     navigate("/admin/login");
   };
 
   return (
-    <div className="admin-sidebar">
+    <div className="admin-sidebar" ref={sidebarRef}>
       <div className="admin-logo">
         <img src={logo} alt="" />
       </div>

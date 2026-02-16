@@ -73,6 +73,7 @@ ChartJS.register(
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const lmsMainRef = useRef(null);
 
   const getInitialSection = () => {
     const params = new URLSearchParams(location.search);
@@ -654,8 +655,14 @@ const StudentDashboard = () => {
   }, [location.search]);
 
   useEffect(() => {
+    if (lmsMainRef.current) {
+      lmsMainRef.current.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  }, [activeSection]);
+
+  useEffect(() => {
     hydrateLiveClasses();
-    // Also refresh when myCourses change (e.g., after purchase)
   }, [myCourses.length]);
 
   const hydrateLiveClasses = async () => {
@@ -3713,7 +3720,7 @@ const StudentDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="lms-main">
+      <div className="lms-main" ref={lmsMainRef}>
         {/* Top Navigation */}
         <header className="lms-header">
           <div className="header-left">

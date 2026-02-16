@@ -79,12 +79,15 @@ const RoleManagement = () => {
   }, []);
 
   const fetchRoles = async () => {
+    setLoading(true);
     try {
       const res = await axios.get("/api/admin/roles", { headers });
       setRoles(res.data.roles || []);
     } catch (err) {
       console.error("Error fetching roles:", err);
+      showMessage(err.response?.data?.message || "Failed to load roles. Please check your permissions.", true);
     }
+    setLoading(false);
   };
 
   const fetchUsers = async () => {
@@ -93,6 +96,7 @@ const RoleManagement = () => {
       setUsers(res.data.users || []);
     } catch (err) {
       console.error("Error fetching users:", err);
+      showMessage(err.response?.data?.message || "Failed to load admin users. Please check your permissions.", true);
     }
   };
 
@@ -318,7 +322,8 @@ const RoleManagement = () => {
                       </td>
                     </tr>
                   ))}
-                  {roles.length === 0 && <tr><td colSpan="4" className="empty">No roles found</td></tr>}
+                  {loading && roles.length === 0 && <tr><td colSpan="4" className="empty">Loading roles...</td></tr>}
+                  {!loading && roles.length === 0 && <tr><td colSpan="4" className="empty">No roles found. Click "Create Role" to add one.</td></tr>}
                 </tbody>
               </table>
             </div>
