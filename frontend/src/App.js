@@ -61,6 +61,7 @@ import AllTeachers from "./pages/mainAdmin/AllTeachers/AllTeachers";
 import AdminProfile from "./pages/mainAdmin/AdminProfile/AdminProfile";
 import AddCourse from "./pages/mainAdmin/AddCourse/AddCourse";
 import AllUsers from "./pages/mainAdmin/AllUsers/AllUsers";
+import UserManagement from "./pages/mainAdmin/UserManagement/UserManagement";
 import CourseContentManager from "./pages/mainAdmin/CourseContentManager/CourseContentManager";
 import CourseTreeView from "./pages/mainAdmin/CourseTreeView/CourseTreeView";
 import CourseStructure from "./pages/mainAdmin/CourseTreeView/CourseStructure";
@@ -274,6 +275,14 @@ const AppContent = () => {
           element={
             <PrivateRoute tokenName="adminToken">
               <AllUsers />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/user-management"
+          element={
+            <PrivateRoute tokenName="adminToken">
+              <UserManagement />
             </PrivateRoute>
           }
         />

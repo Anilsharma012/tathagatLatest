@@ -601,6 +601,228 @@ exports.rejectOfflinePayment = async (req, res) => {
   }
 };
 
+exports.adminCreateUser = async (req, res) => {
+  try {
+    const { name, email, phoneNumber, gender, city, selectedCategory, selectedExam } = req.body;
+
+    if (!name || (!email && !phoneNumber)) {
+      return res.status(400).json({ success: false, message: "Name and either email or phone number are required" });
+    }
+
+    if (email) {
+      const existingEmail = await User.findOne({ email });
+      if (existingEmail) {
+        return res.status(400).json({ success: false, message: "A user with this email already exists" });
+      }
+    }
+
+    if (phoneNumber) {
+      const existingPhone = await User.findOne({ phoneNumber });
+      if (existingPhone) {
+        return res.status(400).json({ success: false, message: "A user with this phone number already exists" });
+      }
+    }
+
+    const newUser = new User({
+      name,
+      email: email || undefined,
+      phoneNumber: phoneNumber || undefined,
+      gender: gender || undefined,
+      city: city || undefined,
+      selectedCategory: selectedCategory || undefined,
+      selectedExam: selectedExam || undefined,
+      role: "student",
+      isEmailVerified: !!email,
+      isPhoneVerified: !!phoneNumber,
+      isOnboardingComplete: true,
+      enrolledCourses: [],
+    });
+
+    await newUser.save();
+
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: newUser,
+    });
+  } catch (error) {
+    console.error("adminCreateUser error:", error);
+    res.status(500).json({ success: false, message: "Failed to create user", error: error.message });
+  }
+};
+
+exports.adminEnrollUser = async (req, res) => {
+  try {
+    const { userId, courseId, validityMonths } = req.body;
+
+    if (!userId || !courseId) {
+      return res.status(400).json({ success: false, message: "userId and courseId are required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    const existingEntry = user.enrolledCourses.find(
+      (c) => c.courseId && c.courseId.toString() === courseId.toString()
+    );
+
+    const previousStatus = existingEntry ? existingEntry.status : null;
+
+    if (existingEntry) {
+      existingEntry.status = "unlocked";
+      existingEntry.enrolledAt = new Date();
+    } else {
+      user.enrolledCourses.push({
+        courseId: courseId,
+        status: "unlocked",
+        enrolledAt: new Date(),
+      });
+    }
+
+    await user.save();
+
+    const Enrollment = require("../models/Enrollment");
+    const months = validityMonths || course.validityMonths || 12;
+    const validTill = new Date();
+    validTill.setMonth(validTill.getMonth() + months);
+
+    try {
+      await Enrollment.findOneAndUpdate(
+        { userId, courseId },
+        {
+          userId,
+          courseId,
+          joinedAt: new Date(),
+          validTill,
+          status: "active",
+        },
+        { upsert: true, new: true }
+      );
+    } catch (enrollErr) {
+      console.error("Enrollment model update failed, rolling back user:", enrollErr);
+      if (previousStatus) {
+        existingEntry.status = previousStatus;
+      } else {
+        user.enrolledCourses = user.enrolledCourses.filter(
+          (c) => c.courseId && c.courseId.toString() !== courseId.toString()
+        );
+      }
+      await user.save();
+      throw enrollErr;
+    }
+
+    const updatedUser = await User.findById(userId).populate("enrolledCourses.courseId");
+
+    res.status(200).json({
+      success: true,
+      message: `User successfully enrolled in "${course.name}"`,
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("adminEnrollUser error:", error);
+    res.status(500).json({ success: false, message: "Failed to enroll user", error: error.message });
+  }
+};
+
+exports.adminGetAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find({}).select("name price description published courseType createdBy").sort({ createdAt: -1 });
+    res.status(200).json({ success: true, courses });
+  } catch (error) {
+    console.error("adminGetAllCourses error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch courses", error: error.message });
+  }
+};
+
+exports.adminGetAllUsers = async (req, res) => {
+  try {
+    const { search, page = 1, limit = 50 } = req.query;
+    const filter = { role: "student" };
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phoneNumber: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const total = await User.countDocuments(filter);
+    const users = await User.find(filter)
+      .select("name email phoneNumber selectedCategory selectedExam enrolledCourses createdAt")
+      .populate("enrolledCourses.courseId", "name price")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    res.status(200).json({
+      success: true,
+      users,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+    });
+  } catch (error) {
+    console.error("adminGetAllUsers error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch users", error: error.message });
+  }
+};
+
+exports.adminRemoveEnrollment = async (req, res) => {
+  try {
+    const { userId, courseId } = req.body;
+
+    if (!userId || !courseId) {
+      return res.status(400).json({ success: false, message: "userId and courseId are required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const removedEntries = user.enrolledCourses.filter(
+      (c) => c.courseId && c.courseId.toString() === courseId.toString()
+    );
+    user.enrolledCourses = user.enrolledCourses.filter(
+      (c) => !c.courseId || c.courseId.toString() !== courseId.toString()
+    );
+    await user.save();
+
+    const Enrollment = require("../models/Enrollment");
+    try {
+      await Enrollment.findOneAndUpdate(
+        { userId, courseId },
+        { status: "expired" }
+      );
+    } catch (enrollErr) {
+      console.error("Enrollment model update failed during removal, rolling back:", enrollErr);
+      removedEntries.forEach((entry) => user.enrolledCourses.push(entry));
+      await user.save();
+      throw enrollErr;
+    }
+
+    const updatedUser = await User.findById(userId).populate("enrolledCourses.courseId");
+
+    res.status(200).json({
+      success: true,
+      message: "Enrollment removed successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("adminRemoveEnrollment error:", error);
+    res.status(500).json({ success: false, message: "Failed to remove enrollment", error: error.message });
+  }
+};
+
 // Admin manual upload (optionally mark paid immediately)
 exports.manualUploadPayment = async (req, res) => {
   try {

@@ -37,6 +37,13 @@ router.get("/course-statistics", adminAuth, adminController.getCourseStatistics)
 router.put("/student/:studentId/course/:courseId/status", adminAuth, adminController.updateStudentCourseStatus);
 router.get("/receipt/:receiptId/download", adminAuth, adminController.downloadStudentReceipt);
 
+// Super Admin: User Management & Enrollment
+router.post("/create-user", adminAuth, adminController.adminCreateUser);
+router.get("/all-users-list", adminAuth, adminController.adminGetAllUsers);
+router.get("/all-courses-list", adminAuth, adminController.adminGetAllCourses);
+router.post("/enroll-user", adminAuth, adminController.adminEnrollUser);
+router.post("/remove-enrollment", adminAuth, adminController.adminRemoveEnrollment);
+
 // Offline payment management
 router.get("/offline-payments", adminAuth, adminController.listOfflinePayments);
 router.put("/payment/:paymentId/offline/approve", adminAuth, adminController.approveOfflinePayment);
